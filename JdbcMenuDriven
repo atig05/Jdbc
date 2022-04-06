@@ -1,0 +1,75 @@
+import java.util.*;
+import java.sql.*;
+class P{
+	static void print(Object o) {
+		System.out.print(o);
+	}
+	static void println(Object o) {
+		System.out.println(o);
+	}
+}
+public class JdbcMenuDriven {
+	static void insert(Statement st) throws Exception{
+		Scanner sc=new Scanner(System.in);
+		P.print("Enter data-");
+		String s=sc.nextLine();
+		String[] ar=s.split(" ");
+		int n=Integer.parseInt(ar[0]);
+		String q="insert into students values"+"("+ar[0]+",'"+ar[1]+"',"+"'"+ar[2]+"'"+")";
+		st.executeUpdate(q);
+	}
+	static void delete(Statement st) throws Exception{
+		Scanner sc=new Scanner(System.in);
+		P.print("Enter condition to delete-");
+		String s=sc.nextLine();
+		String q="DELETE FROM students where "+s;
+		st.executeUpdate(q);
+	}
+	static void show_table(Statement st) throws Exception{
+		ResultSet rs=st.executeQuery("Select * from students");
+		rs.next();
+		do {
+			int n=rs.getInt("roll");
+			String fn=rs.getString("fname");
+			String ln=rs.getString("lname");
+			P.println(n+" "+fn+" "+ln);
+		}
+		while(rs.next());
+		
+	}
+	public static void main(String[] args) throws Exception{
+		// TODO Auto-generated method stub
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","atig","god1");
+		Statement st=con.createStatement();
+		Scanner sc=new Scanner(System.in);
+		int m=1;
+		while(m!=0) {
+			P.println("1 to Show table");
+			P.println("2 to insert into table");
+			P.println("3 to delete from table");
+			P.println("0 to close");
+			P.print("Enter choice-");
+			m=sc.nextInt();
+			switch(m) {
+				case 1:
+					JdbcMenuDriven.show_table(st);
+					P.println("");
+					break;
+				case 2:
+					JdbcMenuDriven.insert(st);
+					break;
+				case 3:
+					JdbcMenuDriven.delete(st);
+					break;
+				case 0:
+					m=0;
+					break;
+				default:
+					P.println("Wrong choice");
+			}
+		}
+		st.close();
+	}
+
+}
